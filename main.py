@@ -2,6 +2,10 @@ import pygame
 #from constants import * # This lets you use the variable, method, class names directly
 import constants # with this you have to prefix everything with contants.
 import player as playerLib
+import asteroid as asteroidLib
+import asteroidfield 
+import shot as shotLib
+import sys
 
 def main():
     print("Starting Asteroids!")
@@ -11,18 +15,37 @@ def main():
 
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
+    shots = pygame.sprite.Group()
+    asteros = pygame.sprite.Group()
 
+    asteroidfield.AsteroidField.containers = updatable
+    asteroidLib.Asteroid.containers = (asteros, updatable, drawable)
     playerLib.Player.containers = (updatable, drawable)
+    shotLib.Shot.containers = (updatable, drawable, shots)
 
 
+    asteroid_field = asteroidfield.AsteroidField() 
     player = playerLib.Player(constants.SCREEN_WIDTH / 2, constants.SCREEN_HEIGHT / 2)
     dt = 0
     while(True):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
-        screen.fill((0,0,0))
+        
         updatable.update(dt)
+        screen.fill((0,0,0))
+        
+
+        for each_asteroid in asteros:
+            if each_asteroid.check_collision(player):
+                print("Game over!")
+                sys.exit()
+            for each_shot in shots:
+                if each_shot.check_collision(each_asteroid):
+                    each_shot.kill()
+                    each_asteroid.split()
+
+
         for each_drawable in drawable:
             each_drawable.draw(screen) 
         pygame.display.flip()
