@@ -8,6 +8,13 @@ def main():
     numpass, numfail = pygame.init()
     screen = pygame.display.set_mode((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT))
     clock = pygame.time.Clock()
+
+    updatable = pygame.sprite.Group()
+    drawable = pygame.sprite.Group()
+
+    playerLib.Player.containers = (updatable, drawable)
+
+
     player = playerLib.Player(constants.SCREEN_WIDTH / 2, constants.SCREEN_HEIGHT / 2)
     dt = 0
     while(True):
@@ -15,8 +22,9 @@ def main():
             if event.type == pygame.QUIT:
                 return
         screen.fill((0,0,0))
-        player.update(dt)
-        player.draw(screen)
+        updatable.update(dt)
+        for each_drawable in drawable:
+            each_drawable.draw(screen) 
         pygame.display.flip()
 
         #Delta time is calculated (/1000 is for miliseconds)
